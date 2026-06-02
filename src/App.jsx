@@ -1,0 +1,168 @@
+import { useEffect, useRef, useState } from 'react'
+import {
+  loadAll,
+  saveExpenses,
+  saveCategories,
+  saveSettings,
+  requestPersist,
+} from './db'
+import { todayStr } from './utils'
+import TabBar from './components/TabBar'
+import Home from './components/Home'
+import Review from './components/Review'
+import Settings from './components/Settings'
+import AddExpenseSheet from './components/AddExpenseSheet'
+
+export default function App() {
+  const [loaded, setLoaded] = useState(false)
+  const [expenses, setExpenses] = useState([])
+  const [categories, setCategories] = useState([])
+  const [settings, setSettings] = useState({})
+  const [tab, setTab] = useState('home')
+  const [adding, setAdding] = useState(false)
+  const [editing, setEditing] = useState(null)
+  const [toast, setToast] = useState(null)
+  const toastTimer = useRef(null)
+
+  useEffect(() => {
+    loadAll().then((data) => {
+      setExpenses(data.expenses)
+      setCategories(data.categories)
+      setSettings(data.settings)
+      setLoaded(true)
+    })
+    requestPersist()
+  }, [])
+
+  function showToast(msg) {
+    setToast(msg)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToast(null), 1600)
+    if (navigator.vibrate) navigator.vibrate(8)
+  }
+
+  function upsertExpense(exp) {
+    setExpenses((prev) => {
+      const exists = prev.some((e) => e.id === exp.id)
+      const next = exists
+        ? prev.map((e) => (e.id === exp.id ? exp : e))
+        : [...prev, exp]
+      saveExpenses(next)
+      return next
+    })
+  }
+
+  function deleteExpense(id) {
+    setExpenses((prev) => {
+      const next = prev.filter((e) => e.id !== id)
+      saveExpenses(next)
+      return next
+    })
+    showToast('削除しました')
+  }
+
+  function updateCategories(next) {
+    setCategories(next)
+    saveCategories(next)
+  }
+
+  function updateSettings(next) {
+    setSettings(next)
+    saveSettings(next)
+  }
+
+  function applyImport(data) {
+    if (Array.isArray(data.expenses)) {
+      setExpenses(data.expenses)
+      saveExpenses(data.expenses)
+    }
+    if (Array.isArray(data.categories)) {
+      setCategories(data.categories)
+      saveCategories(data.categories)
+    }
+    if (data.settings) {
+      setSettings(data.settings)
+      saveSettings(data.settings)
+    }
+  }
+
+  if (!loaded) return <div className="loading">読み込み中…</div>
+
+  const today = todayStr()
+  const todayTotal = expenses
+    .filter((e) => e.date === today)
+    .reduce((a, e) => a + e.amount, 0)
+
+  return (
+    <div className="app">
+      <main className="screen">
+        {tab === 'home' && (
+          <Home
+            expenses={expenses}
+            categories={categories}
+            settings={settings}
+            onEdit={(exp) => {
+              setEditing(exp)
+              setAdding(true)
+            }}
+            onDelete={deleteExpense}
+          />
+        )}
+        {tab === 'review' && (
+          <Review
+            expenses={expenses}
+            categories={categories}
+            settings={settings}
+            onEdit={(exp) => {
+              setEditing(exp)
+              setAdding(true)
+            }}
+            onDelete={deleteExpense}
+          />
+        )}
+        {tab === 'settings' && (
+          <Settings
+            expenses={expenses}
+            categories={categories}
+            settings={settings}
+            onUpdateCategories={updateCategories}
+            onUpdateSettings={updateSettings}
+            onImport={applyImport}
+          />
+        )}
+      </main>
+
+      {tab !== 'settings' && (
+        <button
+          className="fab"
+          onClick={() => {
+            setEditing(null)
+            setAdding(true)
+          }}
+          aria-label="支出を追加"
+        >
+          ＋
+        </button>
+      )}
+
+      <TabBar tab={tab} setTab={setTab} />
+
+      {adding && (
+        <AddExpenseSheet
+          categories={categories}
+          initial={editing}
+          todayTotal={todayTotal}
+          onClose={() => setAdding(false)}
+          onSave={(exp) => {
+            const isEdit = !!editing
+            upsertExpense(exp)
+            setAdding(false)
+            showToast(isEdit ? '更新しました' : '記録しました ✓')
+          }}
+        />
+      )}
+
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  )
+}
