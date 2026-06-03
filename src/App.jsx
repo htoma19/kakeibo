@@ -34,6 +34,23 @@ export default function App() {
     requestPersist()
   }, [])
 
+  // キーボード表示時に入力シートが隠れないよう、見えている高さを CSS 変数(--kb)に反映
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const update = () => {
+      const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
+      document.documentElement.style.setProperty('--kb', kb + 'px')
+    }
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    update()
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+    }
+  }, [])
+
   function showToast(msg) {
     setToast(msg)
     clearTimeout(toastTimer.current)

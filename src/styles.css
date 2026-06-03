@@ -7,6 +7,7 @@
   --danger: #dc2626;
   --border: #e2e8f0;
   --tabbar-h: 58px;
+  --kb: 0px;
 }
 
 * {
@@ -261,6 +262,9 @@ input {
   display: flex;
   align-items: flex-end;
   animation: fade 0.2s ease;
+  /* キーボードの高さ分だけ持ち上げ、シートが隠れないようにする */
+  padding-bottom: var(--kb);
+  transition: padding-bottom 0.2s ease;
 }
 .sheet {
   width: 100%;
@@ -270,7 +274,7 @@ input {
   border-radius: 24px 24px 0 0;
   padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   animation: slideup 0.25s ease;
-  max-height: 92dvh;
+  max-height: calc(100dvh - var(--kb) - 16px);
   overflow-y: auto;
 }
 @keyframes slideup {
@@ -365,7 +369,11 @@ input {
 .sheet-actions {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
+  margin: 12px -20px 0;
+  padding: 10px 20px 0;
+  position: sticky;
+  bottom: 0;
+  background: var(--card);
 }
 .btn-primary,
 .btn-secondary {

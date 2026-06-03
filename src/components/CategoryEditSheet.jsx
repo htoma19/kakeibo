@@ -81,15 +81,6 @@ export default function CategoryEditSheet({
           ))}
         </div>
 
-        <div className="sheet-actions">
-          <button className="btn-secondary" onClick={onClose}>
-            キャンセル
-          </button>
-          <button className="btn-primary" disabled={!canSave} onClick={save}>
-            保存
-          </button>
-        </div>
-
         {isEdit && !confirming && (
           <button className="danger-btn" onClick={() => setConfirming(true)}>
             このカテゴリを削除
@@ -119,6 +110,15 @@ export default function CategoryEditSheet({
             </div>
           </div>
         )}
+
+        <div className="sheet-actions">
+          <button className="btn-secondary" onClick={onClose}>
+            キャンセル
+          </button>
+          <button className="btn-primary" disabled={!canSave} onClick={save}>
+            保存
+          </button>
+        </div>
       </div>
     </div>
   )
