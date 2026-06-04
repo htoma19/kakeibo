@@ -70,7 +70,12 @@ export default function AddExpenseSheet({
                 className={'chip' + (selected ? ' selected' : '')}
                 style={
                   selected
-                    ? { background: c.color, borderColor: c.color, color: '#fff' }
+                    ? {
+                        background: c.color,
+                        borderColor: c.color,
+                        color: '#fff',
+                        boxShadow: `0 3px 16px ${c.color}88`,
+                      }
                     : { borderColor: c.color }
                 }
                 onClick={() => setCategoryId(c.id)}
