@@ -9,6 +9,11 @@ const REPO_BASE = '/kakeibo/'
 // 開発(npm run dev)は '/'、本番ビルド/プレビューは REPO_BASE を使う。
 export default defineConfig(({ command, isPreview }) => ({
   base: command === 'build' || isPreview ? REPO_BASE : '/',
+  define: {
+    __BUILD_TIME__: JSON.stringify(
+      new Date().toISOString().slice(0, 16).replace('T', ' '),
+    ),
+  },
   plugins: [
     react(),
     VitePWA({
@@ -19,8 +24,8 @@ export default defineConfig(({ command, isPreview }) => ({
         short_name: '家計簿',
         description: '一日にいくら使ったかを手入力して「実感」する家計簿',
         lang: 'ja',
-        theme_color: '#0f766e',
-        background_color: '#f1f5f9',
+        theme_color: '#d97757',
+        background_color: '#f5f1e8',
         display: 'standalone',
         orientation: 'portrait',
         icons: [

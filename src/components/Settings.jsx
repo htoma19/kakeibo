@@ -214,6 +214,9 @@ export default function Settings({
         <p className="data-info">
           記録 {expenses.length} 件 ／ カテゴリ {categories.length} 件
         </p>
+        <p className="data-info" style={{ marginTop: 4 }}>
+          バージョン: {__BUILD_TIME__}
+        </p>
       </section>
 
       {catSheetOpen && (

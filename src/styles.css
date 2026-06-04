@@ -1,13 +1,14 @@
 :root {
-  --accent: #0f766e;
-  --bg: #eef2ff;
-  --card: rgba(255, 255, 255, 0.6);
-  --text: #0f172a;
-  --muted: #51607a;
+  /* Anthropic / Claude テーマ（コーラル × 温かいクリーム） */
+  --accent: #d97757;
+  --bg: #f5f1e8;
+  --card: rgba(255, 252, 248, 0.62);
+  --text: #262320;
+  --muted: #6b6358;
   --danger: #dc2626;
-  --border: #d7deea;
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-blur: blur(18px) saturate(160%);
+  --border: #e6ddd0;
+  --glass-border: rgba(255, 253, 250, 0.7);
+  --glass-blur: blur(18px) saturate(150%);
   --tabbar-h: 58px;
   --kb: 0px;
 }
@@ -42,11 +43,11 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(42% 34% at 12% 10%, rgba(45, 212, 191, 0.55), transparent 70%),
-    radial-gradient(44% 32% at 90% 6%, rgba(56, 189, 248, 0.5), transparent 70%),
-    radial-gradient(52% 42% at 86% 96%, rgba(167, 139, 250, 0.5), transparent 70%),
-    radial-gradient(48% 40% at 6% 98%, rgba(251, 146, 160, 0.38), transparent 70%),
-    linear-gradient(165deg, #eef2ff, #ecfeff 50%, #f5f3ff);
+    radial-gradient(42% 34% at 12% 10%, rgba(217, 119, 87, 0.42), transparent 70%),
+    radial-gradient(44% 32% at 90% 6%, rgba(232, 167, 122, 0.45), transparent 70%),
+    radial-gradient(52% 42% at 86% 96%, rgba(214, 141, 110, 0.42), transparent 70%),
+    radial-gradient(48% 40% at 6% 98%, rgba(231, 204, 165, 0.45), transparent 70%),
+    linear-gradient(165deg, #f6f2ea, #f4eee2 50%, #f7f1e7);
 }
 
 button {
@@ -237,7 +238,7 @@ input {
   border: none;
   font-size: 2rem;
   line-height: 1;
-  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.45);
+  box-shadow: 0 6px 18px rgba(217, 119, 87, 0.45);
   z-index: 20;
 }
 
@@ -747,7 +748,7 @@ input {
 }
 .emoji-opt.selected {
   border-color: var(--accent);
-  background: rgba(15, 118, 110, 0.1);
+  background: rgba(217, 119, 87, 0.14);
 }
 .color-row {
   display: flex;
