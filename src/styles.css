@@ -280,7 +280,9 @@ input {
 .sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(30, 22, 16, 0.3);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
   z-index: 30;
   display: flex;
   align-items: flex-end;
@@ -293,10 +295,10 @@ input {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.8);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-top: 1px solid var(--glass-border);
+  background: rgba(255, 250, 243, 0.58);
+  -webkit-backdrop-filter: blur(30px) saturate(185%);
+  backdrop-filter: blur(30px) saturate(185%);
+  border-top: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: 24px 24px 0 0;
   padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   animation: slideup 0.25s ease;
@@ -332,19 +334,38 @@ input {
   margin: 0 0 16px;
 }
 .amount-input-wrap {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin: 4px 0 12px;
-  padding: 10px 18px;
+  margin: 4px 0 14px;
+  padding: 14px 18px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.38);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  backdrop-filter: blur(14px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.25), 0 4px 16px rgba(31, 45, 61, 0.1);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.16)
+  );
+  -webkit-backdrop-filter: blur(16px) saturate(190%);
+  backdrop-filter: blur(16px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    0 6px 18px rgba(31, 25, 20, 0.12);
+}
+/* ガラスの光沢（上半分のきらめき） */
+.amount-input-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 52%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
 }
 .yen-sign {
   font-size: 2rem;
@@ -380,10 +401,14 @@ input {
 }
 .chip {
   border: 1.5px solid var(--border);
-  background: rgba(255, 255, 255, 0.4);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
-  backdrop-filter: blur(8px) saturate(140%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.18)
+  );
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  backdrop-filter: blur(8px) saturate(150%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.85);
   border-radius: 999px;
   padding: 8px 14px;
   font-size: 0.9rem;
@@ -395,15 +420,20 @@ input {
 .memo-input,
 .date-input {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 13px 14px;
   font-size: 1rem;
   margin-bottom: 12px;
-  background: rgba(255, 255, 255, 0.42);
-  -webkit-backdrop-filter: blur(10px) saturate(150%);
-  backdrop-filter: blur(10px) saturate(150%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.16)
+  );
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    0 2px 8px rgba(31, 25, 20, 0.06);
   color: var(--text);
 }
 .sheet-actions {
@@ -544,15 +574,20 @@ input {
 }
 .budget-row input {
   flex: 1;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 14px;
-  padding: 12px;
+  padding: 13px;
   font-size: 1rem;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.42);
-  -webkit-backdrop-filter: blur(10px) saturate(150%);
-  backdrop-filter: blur(10px) saturate(150%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.16)
+  );
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    0 2px 8px rgba(31, 25, 20, 0.06);
 }
 .cat-edit-list {
   list-style: none;
