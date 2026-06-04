@@ -24,8 +24,8 @@ export default defineConfig(({ command, isPreview }) => ({
         short_name: '家計簿',
         description: '一日にいくら使ったかを手入力して「実感」する家計簿',
         lang: 'ja',
-        theme_color: '#0f1115',
-        background_color: '#0f1115',
+        theme_color: '#0f766e',
+        background_color: '#eef2ff',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
