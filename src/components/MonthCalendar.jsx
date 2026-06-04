@@ -13,10 +13,10 @@ function cellStyle(amount, budget) {
   if (budget > 0) {
     if (amount > budget) return { background: '#fee2e2' }
     const t = Math.min(1, amount / budget)
-    return { background: `rgba(217,119,87,${0.12 + 0.35 * t})` }
+    return { background: `rgba(204,0,0,${0.12 + 0.35 * t})` }
   }
   const t = Math.min(1, amount / 5000)
-  return { background: `rgba(217,119,87,${0.12 + 0.35 * t})` }
+  return { background: `rgba(204,0,0,${0.12 + 0.35 * t})` }
 }
 
 const WEEK_HEAD = ['月', '火', '水', '木', '金', '土', '日']

@@ -106,7 +106,7 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
 
   const barData = {
     labels: days.map((d) => WEEKDAYS[parseDateStr(d).getDay()]),
-    datasets: [{ data: byDay, backgroundColor: '#d97757', borderRadius: 4 }],
+    datasets: [{ data: byDay, backgroundColor: '#cc0000', borderRadius: 4 }],
   }
   const barOptions = {
     responsive: true,
