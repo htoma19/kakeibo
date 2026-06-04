@@ -1,14 +1,14 @@
 :root {
-  /* Honda レッド × クール・ホワイト/シルバー */
-  --accent: #cc0000;
-  --bg: #eef0f3;
-  --card: rgba(255, 255, 255, 0.6);
-  --text: #1b1f24;
-  --muted: #647082;
-  --danger: #b00020;
-  --border: #dde2e8;
-  --glass-border: rgba(255, 255, 255, 0.72);
-  --glass-blur: blur(18px) saturate(150%);
+  /* Honda レーシングレッド × ダーク（カーボン） */
+  --accent: #ff2e3a;
+  --bg: #0f1115;
+  --card: rgba(38, 42, 52, 0.55);
+  --text: #f2f4f7;
+  --muted: #9aa4b2;
+  --danger: #ff5a5f;
+  --border: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-blur: blur(18px) saturate(140%);
   --tabbar-h: 58px;
   --kb: 0px;
 }
@@ -43,11 +43,11 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(42% 34% at 12% 10%, rgba(204, 0, 0, 0.3), transparent 70%),
-    radial-gradient(44% 32% at 90% 6%, rgba(225, 60, 55, 0.26), transparent 70%),
-    radial-gradient(52% 42% at 86% 96%, rgba(120, 132, 148, 0.26), transparent 70%),
-    radial-gradient(48% 40% at 6% 98%, rgba(204, 0, 0, 0.18), transparent 70%),
-    linear-gradient(165deg, #f3f5f8, #eaecf0 50%, #f4f6f9);
+    radial-gradient(42% 34% at 12% 8%, rgba(255, 46, 58, 0.28), transparent 70%),
+    radial-gradient(40% 30% at 90% 8%, rgba(255, 46, 58, 0.18), transparent 70%),
+    radial-gradient(55% 45% at 85% 98%, rgba(90, 100, 122, 0.24), transparent 70%),
+    radial-gradient(50% 40% at 6% 98%, rgba(255, 46, 58, 0.14), transparent 70%),
+    linear-gradient(165deg, #0f1115, #141720 55%, #0e1014);
 }
 
 button {
@@ -926,4 +926,96 @@ input {
   border: 1px solid var(--glass-border);
   box-shadow: 0 8px 24px rgba(31, 45, 61, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* ===== ダークテーマ上書き（Hondaレーシング・カーボン） ===== */
+.sheet-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+.tabbar {
+  background: rgba(16, 18, 24, 0.72);
+}
+.sheet {
+  background: rgba(26, 29, 36, 0.62);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.sheet-actions {
+  background: rgba(22, 25, 32, 0.82);
+}
+.amount-input-wrap {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.13),
+    rgba(255, 255, 255, 0.03)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.28),
+    0 6px 18px rgba(0, 0, 0, 0.35);
+}
+.amount-input-wrap::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0)
+  );
+}
+.memo-input,
+.date-input,
+.budget-row input {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.03)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.chip {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.11),
+    rgba(255, 255, 255, 0.03)
+  );
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.22);
+}
+.home-head,
+.mini-stat,
+.expense-item,
+.chart-card,
+.settings-section,
+.review-summary > div,
+.cat-row,
+.action-btn {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.cal-cell {
+  background: rgba(255, 255, 255, 0.05);
+}
+.cal-amt.over {
+  color: #fff;
+}
+.seg {
+  background: rgba(255, 255, 255, 0.06);
+}
+.seg-btn.active {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+.danger-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 90, 95, 0.5);
+  color: #ff8a8e;
+}
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+}
+.fab {
+  box-shadow: 0 6px 22px rgba(255, 46, 58, 0.5);
+}
+.emoji-opt.selected {
+  background: rgba(255, 46, 58, 0.18);
 }
