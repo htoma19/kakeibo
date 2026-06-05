@@ -801,6 +801,42 @@ input {
 .color-opt.selected {
   box-shadow: 0 0 0 2px var(--accent);
 }
+.emoji-free {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin: 4px 0 2px;
+  background: var(--card);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+}
+.picker-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0 0 4px;
+  text-align: center;
+}
+.color-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 2px 2px;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+.color-custom input[type='color'] {
+  width: 56px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: none;
+}
 .danger-btn {
   width: 100%;
   border: 1.5px solid #fecaca;

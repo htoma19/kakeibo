@@ -1,13 +1,18 @@
 import { useState } from 'react'
 
 const EMOJI_CHOICES = [
-  '🍚', '🍜', '🚃', '🧴', '🎮', '🍻', '🏠', '📦',
-  '☕️', '🛒', '💊', '👕', '📚', '🎁', '✈️', '🐶',
-  '💡', '🏥', '💇', '🎬', '🍰', '⛽️', '📱', '💰',
+  '🍚', '🍜', '🍞', '🍱', '🥗', '🍣', '🍕', '🍰',
+  '☕️', '🧋', '🍺', '🍷', '🛒', '🛍️', '👕', '👟',
+  '💄', '🧴', '🧻', '🚃', '🚗', '🚕', '🚌', '🚲',
+  '✈️', '⛽️', '🏠', '💡', '💧', '🔌', '📶', '🧾',
+  '💳', '💰', '💊', '🏥', '🦷', '🏋️', '💆', '💇',
+  '🎮', '🎬', '📚', '🎵', '🎨', '⚽️', '🎁', '📦',
+  '🐶', '🐱', '👶', '🌸', '📱', '💻', '✏️', '💼',
 ]
 const COLOR_CHOICES = [
-  '#ef4444', '#f97316', '#f59e0b', '#10b981', '#3b82f6',
-  '#6366f1', '#a855f7', '#ec4899', '#14b8a6', '#64748b',
+  '#ef4444', '#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#8b5cf6', '#6366f1',
+  '#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#22c55e', '#84cc16',
+  '#eab308', '#f59e0b', '#f97316', '#fb7185', '#78716c', '#64748b', '#94a3b8',
 ]
 
 export default function CategoryEditSheet({
@@ -67,6 +72,17 @@ export default function CategoryEditSheet({
             </button>
           ))}
         </div>
+        <input
+          className="emoji-free"
+          type="text"
+          value={icon}
+          maxLength={8}
+          onChange={(e) => setIcon(e.target.value)}
+          aria-label="絵文字を直接入力"
+        />
+        <p className="picker-hint">
+          ↑ キーボードの絵文字から、好きなものを直接入力もできます
+        </p>
 
         <p className="picker-label">色</p>
         <div className="color-row">
@@ -80,6 +96,14 @@ export default function CategoryEditSheet({
             />
           ))}
         </div>
+        <label className="color-custom">
+          <span>好きな色を選ぶ</span>
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+          />
+        </label>
 
         {isEdit && !confirming && (
           <button className="danger-btn" onClick={() => setConfirming(true)}>
