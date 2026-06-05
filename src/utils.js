@@ -49,3 +49,38 @@ export function firstExpenseDate(expenses) {
   if (!expenses.length) return null
   return expenses.reduce((min, e) => (e.date < min ? e.date : min), expenses[0].date)
 }
+
+// 満足度タグ
+export const MOODS = [
+  { id: 'good', emoji: '😊', label: '満足' },
+  { id: 'meh', emoji: '😐', label: 'ふつう' },
+  { id: 'regret', emoji: '😞', label: '後悔' },
+]
+export const MOOD_EMOJI = { good: '😊', meh: '😐', regret: '😞' }
+
+// 金額を時給で「労働時間」に換算（時給0なら null）
+export function formatHours(amount, wage) {
+  if (!wage || wage <= 0) return null
+  const h = amount / wage
+  if (h < 1) return `${Math.round(h * 60)}分`
+  return `${h.toFixed(1)}時間`
+}
+
+// 目安以内が続く連続日数（今日から記録開始日まで遡る）
+export function underBudgetStreak(expenses, budget, todayS, firstS) {
+  if (!budget || budget <= 0 || !firstS) return 0
+  const byDay = {}
+  expenses.forEach((e) => {
+    byDay[e.date] = (byDay[e.date] || 0) + e.amount
+  })
+  let streak = 0
+  const cur = parseDateStr(todayS)
+  const first = parseDateStr(firstS)
+  while (cur >= first) {
+    const spent = byDay[toDateStr(cur)] || 0
+    if (spent <= budget) streak++
+    else break
+    cur.setDate(cur.getDate() - 1)
+  }
+  return streak
+}

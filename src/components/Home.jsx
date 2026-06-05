@@ -8,6 +8,8 @@ import {
   WEEKDAYS,
   daysInclusive,
   firstExpenseDate,
+  formatHours,
+  underBudgetStreak,
 } from '../utils'
 import ExpenseList from './ExpenseList'
 
@@ -47,6 +49,15 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
     }
   }
 
+  const wage = settings.hourlyWage || 0
+  const todayHours = formatHours(todayTotal, wage)
+  const streak = underBudgetStreak(
+    expenses,
+    budget,
+    today,
+    firstExpenseDate(expenses),
+  )
+
   return (
     <div>
       <header className="home-head">
@@ -55,6 +66,9 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
         <p key={todayTotal} className={'today-total' + (over ? ' over' : '')}>
           {formatYen(todayTotal)}
         </p>
+        {todayHours && todayTotal > 0 && (
+          <p className="today-hours">⏱ 約 {todayHours}の労働</p>
+        )}
         {budget > 0 && (
           <>
             <p className={'budget-line' + (over ? ' over' : '')}>
@@ -73,6 +87,9 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
               />
             </div>
           </>
+        )}
+        {streak >= 2 && (
+          <p className="streak-badge">🔥 {streak}日連続 目安以内！</p>
         )}
       </header>
 

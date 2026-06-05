@@ -19,6 +19,7 @@ import {
   WEEKDAYS,
   daysInclusive,
   firstExpenseDate,
+  MOODS,
 } from '../utils'
 import MonthCalendar from './MonthCalendar'
 import DayDetailSheet from './DayDetailSheet'
@@ -122,6 +123,16 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
           .sort((a, b) => b.annual - a.annual)
       : []
   const annualTotal = annualByCat.reduce((a, x) => a + x.annual, 0)
+
+  // 満足度の内訳（この期間）
+  const moodSummary = MOODS.map((m) => {
+    const items = inRange.filter((e) => e.mood === m.id)
+    return {
+      m,
+      count: items.length,
+      total: items.reduce((a, e) => a + e.amount, 0),
+    }
+  }).filter((x) => x.count > 0)
 
   const barData = {
     labels: days.map((d) => WEEKDAYS[parseDateStr(d).getDay()]),
@@ -302,6 +313,22 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
           </>
         )}
       </section>
+
+      {moodSummary.length > 0 && (
+        <section className="chart-card">
+          <h2 className="section-title">満足度（この期間）</h2>
+          <ul className="mood-summary">
+            {moodSummary.map((x) => (
+              <li key={x.m.id} className={'mood-' + x.m.id}>
+                <span className="mood-emoji">{x.m.emoji}</span>
+                <span className="cr-name">{x.m.label}</span>
+                <span className="mood-count">{x.count}件</span>
+                <span className="cr-amount">{formatYen(x.total)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {annualByCat.length > 0 && (
         <section className="chart-card">

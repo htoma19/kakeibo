@@ -12,12 +12,18 @@ export default function Settings({
 }) {
   const fileRef = useRef(null)
   const [budget, setBudget] = useState(String(settings.dailyBudget ?? ''))
+  const [wage, setWage] = useState(String(settings.hourlyWage || ''))
   const [catSheetOpen, setCatSheetOpen] = useState(false)
   const [catEditing, setCatEditing] = useState(null) // null = 追加モード
 
   function saveBudget() {
     const n = parseInt(budget, 10) || 0
     onUpdateSettings({ ...settings, dailyBudget: n })
+  }
+
+  function saveWage() {
+    const n = parseInt(wage, 10) || 0
+    onUpdateSettings({ ...settings, hourlyWage: n })
   }
 
   function openAdd() {
@@ -140,6 +146,34 @@ export default function Settings({
         <p className="note">
           ホーム画面の「あと◯◯円」やカレンダーの色に使われます。0
           にすると非表示になります。
+        </p>
+      </section>
+
+      <section className="settings-section">
+        <h2 className="section-title">時給（任意）</h2>
+        <div className="budget-row">
+          <span className="yen-sign" style={{ fontSize: '1.3rem' }}>
+            ¥
+          </span>
+          <input
+            type="number"
+            inputMode="numeric"
+            value={wage}
+            onChange={(e) => setWage(e.target.value)}
+            onBlur={saveWage}
+            placeholder="例: 1500"
+          />
+          <button
+            className="btn-primary"
+            style={{ flex: '0 0 auto', padding: '12px 18px' }}
+            onClick={saveWage}
+          >
+            保存
+          </button>
+        </div>
+        <p className="note">
+          設定すると、支出を「労働◯時間分」に換算して表示します（入力画面・ホーム）。0
+          で非表示。
         </p>
       </section>
 

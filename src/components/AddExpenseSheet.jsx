@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { formatYen, todayStr } from '../utils'
+import { formatYen, todayStr, formatHours, MOODS } from '../utils'
 
 export default function AddExpenseSheet({
   categories,
   initial,
   todayTotal,
+  hourlyWage,
   onClose,
   onSave,
 }) {
@@ -14,9 +15,11 @@ export default function AddExpenseSheet({
   )
   const [memo, setMemo] = useState(initial?.memo || '')
   const [date, setDate] = useState(initial?.date || todayStr())
+  const [mood, setMood] = useState(initial?.mood || null)
 
   const amountNum = parseInt(amount, 10) || 0
   const canSave = amountNum > 0 && categoryId
+  const hours = formatHours(amountNum, hourlyWage)
 
   function handleSave() {
     if (!canSave) return
@@ -26,6 +29,7 @@ export default function AddExpenseSheet({
       categoryId,
       memo: memo.trim(),
       date,
+      mood,
       createdAt: initial?.createdAt || new Date().toISOString(),
     })
   }
@@ -60,6 +64,9 @@ export default function AddExpenseSheet({
             今日の合計 {formatYen(baseToday)} → <b>{formatYen(projected)}</b>
           </p>
         )}
+        {hours && amountNum > 0 && (
+          <p className="hours-hint">⏱ あなたの時給で約 {hours}の労働</p>
+        )}
 
         <div className="cat-chips">
           {categories.map((c) => {
@@ -84,6 +91,20 @@ export default function AddExpenseSheet({
               </button>
             )
           })}
+        </div>
+
+        <div className="mood-row">
+          {MOODS.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              className={'mood-btn' + (mood === m.id ? ' selected' : '')}
+              onClick={() => setMood(mood === m.id ? null : m.id)}
+            >
+              <span className="mood-emoji">{m.emoji}</span>
+              {m.label}
+            </button>
+          ))}
         </div>
 
         <input

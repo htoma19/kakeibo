@@ -24,6 +24,7 @@ export const DEFAULT_CATEGORIES = [
 
 export const DEFAULT_SETTINGS = {
   dailyBudget: 2000,
+  hourlyWage: 0,
 }
 
 // 起動時に全データを読み込み（無ければ初期値を作って保存）

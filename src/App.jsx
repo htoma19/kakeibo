@@ -169,6 +169,7 @@ export default function App() {
           categories={categories}
           initial={editing}
           todayTotal={todayTotal}
+          hourlyWage={settings.hourlyWage || 0}
           onClose={() => setAdding(false)}
           onSave={(exp) => {
             const isEdit = !!editing

@@ -1,4 +1,4 @@
-import { formatYen } from '../utils'
+import { formatYen, MOOD_EMOJI } from '../utils'
 
 // 支出の一覧（ホーム・日別明細で共通利用）
 export default function ExpenseList({ expenses, categories, onEdit, onDelete }) {
@@ -19,6 +19,9 @@ export default function ExpenseList({ expenses, categories, onEdit, onDelete }) 
               <span className="expense-cat">{c?.name || '不明'}</span>
               {e.memo && <span className="expense-memo">{e.memo}</span>}
             </span>
+            {e.mood && (
+              <span className="expense-mood">{MOOD_EMOJI[e.mood]}</span>
+            )}
             <span className="expense-amount">{formatYen(e.amount)}</span>
             <button
               className="expense-del"
