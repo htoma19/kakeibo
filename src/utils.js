@@ -36,3 +36,16 @@ export function startOfMonth(d = new Date()) {
 }
 
 export const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土']
+
+// 2つの「YYYY-MM-DD」間の日数（両端含む）
+export function daysInclusive(startStr, endStr) {
+  const a = parseDateStr(startStr)
+  const b = parseDateStr(endStr)
+  return Math.floor((b - a) / 86400000) + 1
+}
+
+// 最も古い記録日（YYYY-MM-DD）。記録がなければ null
+export function firstExpenseDate(expenses) {
+  if (!expenses.length) return null
+  return expenses.reduce((min, e) => (e.date < min ? e.date : min), expenses[0].date)
+}

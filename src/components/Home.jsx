@@ -6,6 +6,8 @@ import {
   startOfWeek,
   startOfMonth,
   WEEKDAYS,
+  daysInclusive,
+  firstExpenseDate,
 } from '../utils'
 import ExpenseList from './ExpenseList'
 
@@ -30,6 +32,20 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
   const budget = settings.dailyBudget || 0
   const remaining = budget - todayTotal
   const over = budget > 0 && remaining < 0
+
+  // 今月、目安より「浮いた額」（記録開始日 or 月初〜今日）
+  let saved = null
+  if (budget > 0) {
+    const first = firstExpenseDate(expenses)
+    const startStr = first && first > monthStart ? first : monthStart
+    if (startStr <= today) {
+      const elapsed = daysInclusive(startStr, today)
+      const spent = expenses
+        .filter((e) => e.date >= startStr && e.date <= today)
+        .reduce((a, e) => a + e.amount, 0)
+      saved = elapsed * budget - spent
+    }
+  }
 
   return (
     <div>
@@ -70,6 +86,17 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
           <span className="mini-stat-value">{formatYen(monthTotal)}</span>
         </div>
       </div>
+
+      {saved !== null && (
+        <div className="saved-card">
+          <span className="saved-label">今月、目安より</span>
+          <span className={'saved-amount' + (saved < 0 ? ' over' : '')}>
+            {saved >= 0
+              ? `💰 ${formatYen(saved)} 浮いた`
+              : `${formatYen(-saved)} 超過`}
+          </span>
+        </div>
+      )}
 
       <section>
         <h2 className="section-title">今日の記録</h2>

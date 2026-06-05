@@ -17,6 +17,8 @@ import {
   startOfWeek,
   startOfMonth,
   WEEKDAYS,
+  daysInclusive,
+  firstExpenseDate,
 } from '../utils'
 import MonthCalendar from './MonthCalendar'
 import DayDetailSheet from './DayDetailSheet'
@@ -103,6 +105,23 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
   const projected = Math.round(avg * daysInMonth)
   const monthlyBudget = budget > 0 ? budget * daysInMonth : 0
+
+  // 塵も積もれば：このペースが1年続いたら（全記録から試算）
+  const trackingStart = firstExpenseDate(expenses)
+  const daysTracked = trackingStart ? daysInclusive(trackingStart, endStr) : 0
+  const annualByCat =
+    daysTracked >= 3
+      ? categories
+          .map((c) => {
+            const tot = expenses
+              .filter((e) => e.categoryId === c.id)
+              .reduce((a, e) => a + e.amount, 0)
+            return { c, annual: Math.round((tot / daysTracked) * 365) }
+          })
+          .filter((x) => x.annual > 0)
+          .sort((a, b) => b.annual - a.annual)
+      : []
+  const annualTotal = annualByCat.reduce((a, x) => a + x.annual, 0)
 
   const barData = {
     labels: days.map((d) => WEEKDAYS[parseDateStr(d).getDay()]),
@@ -283,6 +302,30 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
           </>
         )}
       </section>
+
+      {annualByCat.length > 0 && (
+        <section className="chart-card">
+          <h2 className="section-title">塵も積もれば…（年間ペース）</h2>
+          <div className="annual-total">
+            <span className="rs-label">このペースが1年続くと</span>
+            <b>{formatYen(annualTotal)}</b>
+          </div>
+          <ul className="annual-list">
+            {annualByCat.map((x) => (
+              <li key={x.c.id}>
+                <span className="dot" style={{ background: x.c.color }} />
+                <span className="cr-name">
+                  {x.c.icon} {x.c.name}
+                </span>
+                <span className="annual-amt">年 {formatYen(x.annual)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="note">
+            記録 {daysTracked} 日分のペースから試算（記録が増えるほど正確に）
+          </p>
+        </section>
+      )}
 
       {selectedDate && (
         <DayDetailSheet
