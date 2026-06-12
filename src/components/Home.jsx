@@ -13,7 +13,16 @@ import {
 } from '../utils'
 import ExpenseList from './ExpenseList'
 
-export default function Home({ expenses, categories, settings, onEdit, onDelete }) {
+export default function Home({
+  expenses,
+  categories,
+  settings,
+  backupDue,
+  onBackup,
+  onSnoozeBackup,
+  onEdit,
+  onDelete,
+}) {
   const today = todayStr()
 
   const todayExpenses = expenses
@@ -104,6 +113,24 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
           <span className="mini-stat-value">{formatYen(monthTotal)}</span>
         </div>
       </div>
+
+      {backupDue && (
+        <div className="backup-card">
+          <p className="backup-text">
+            {settings.lastBackupAt
+              ? '前回のバックアップから30日が経ちました。データはこのスマホ内だけにあります。'
+              : 'データはこのスマホ内だけに保存されています。バックアップを書き出しておくと安心です。'}
+          </p>
+          <div className="backup-actions">
+            <button className="backup-later" onClick={onSnoozeBackup}>
+              あとで
+            </button>
+            <button className="backup-now" onClick={onBackup}>
+              📥 今すぐ書き出す
+            </button>
+          </div>
+        </div>
+      )}
 
       {saved !== null && (
         <div className="saved-card">

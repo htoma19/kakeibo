@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { SCHEMA_VERSION } from '../db'
+import { exportBackupJSON, downloadFile, stamp } from '../backup'
 import CategoryEditSheet from './CategoryEditSheet'
 
 export default function Settings({
@@ -62,19 +62,8 @@ export default function Settings({
   }
 
   function exportJSON() {
-    const data = {
-      app: 'kakeibo',
-      version: SCHEMA_VERSION,
-      exportedAt: new Date().toISOString(),
-      expenses,
-      categories,
-      settings,
-    }
-    download(
-      JSON.stringify(data, null, 2),
-      `kakeibo-backup-${stamp()}.json`,
-      'application/json',
-    )
+    exportBackupJSON(expenses, categories, settings)
+    onUpdateSettings({ ...settings, lastBackupAt: new Date().toISOString() })
   }
 
   function exportCSV() {
@@ -91,7 +80,7 @@ export default function Settings({
       rows
         .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
         .join('\r\n')
-    download(csv, `kakeibo-${stamp()}.csv`, 'text/csv')
+    downloadFile(csv, `kakeibo-${stamp()}.csv`, 'text/csv')
   }
 
   function handleImportFile(ev) {
@@ -237,6 +226,14 @@ export default function Settings({
           onChange={handleImportFile}
         />
         <p className="note">
+          最後のバックアップ:{' '}
+          <b>
+            {settings.lastBackupAt
+              ? new Date(settings.lastBackupAt).toLocaleDateString('ja-JP')
+              : 'まだありません'}
+          </b>
+        </p>
+        <p className="note">
           <b>データはこのスマホ内だけに保存されています。</b>
           iOS はブラウザの保存領域を消すことがあるため、ときどき JSON
           を書き出して「ファイル」アプリや iCloud に保存しておくと安心です。
@@ -266,20 +263,3 @@ export default function Settings({
   )
 }
 
-function download(content, filename, type) {
-  const blob = new Blob([content], { type })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
-}
-
-function stamp() {
-  const d = new Date()
-  const p = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`
-}

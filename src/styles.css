@@ -964,6 +964,48 @@ input {
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
+/* ===== バックアップリマインダー（ホーム） ===== */
+.backup-card {
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1.5px solid #fcd34d;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(31, 45, 61, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.backup-text {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.55;
+}
+.backup-actions {
+  display: flex;
+  gap: 10px;
+}
+.backup-later {
+  flex: 1;
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+.backup-now {
+  flex: 2;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
 /* ===== 浮いたお金カード（ホーム） ===== */
 .saved-card {
   display: flex;

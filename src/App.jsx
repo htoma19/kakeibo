@@ -7,6 +7,7 @@ import {
   requestPersist,
 } from './db'
 import { todayStr } from './utils'
+import { exportBackupJSON, backupReminderDue } from './backup'
 import TabBar from './components/TabBar'
 import Home from './components/Home'
 import Review from './components/Review'
@@ -104,7 +105,19 @@ export default function App() {
     }
   }
 
+  function doBackup() {
+    exportBackupJSON(expenses, categories, settings)
+    updateSettings({ ...settings, lastBackupAt: new Date().toISOString() })
+    showToast('バックアップを書き出しました ✓')
+  }
+
+  function snoozeBackup() {
+    updateSettings({ ...settings, backupSnoozedAt: new Date().toISOString() })
+  }
+
   if (!loaded) return <div className="loading">読み込み中…</div>
+
+  const backupDue = backupReminderDue(expenses, settings)
 
   const today = todayStr()
   const todayTotal = expenses
@@ -119,6 +132,9 @@ export default function App() {
             expenses={expenses}
             categories={categories}
             settings={settings}
+            backupDue={backupDue}
+            onBackup={doBackup}
+            onSnoozeBackup={snoozeBackup}
             onEdit={(exp) => {
               setEditing(exp)
               setAdding(true)
