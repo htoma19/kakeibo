@@ -6,7 +6,7 @@ import {
   saveSettings,
   requestPersist,
 } from './db'
-import { todayStr } from './utils'
+import { todayStr, frequentEntries } from './utils'
 import { exportBackupJSON, backupReminderDue } from './backup'
 import TabBar from './components/TabBar'
 import Home from './components/Home'
@@ -199,6 +199,7 @@ export default function App() {
           initial={editing}
           todayTotal={todayTotal}
           hourlyWage={settings.hourlyWage || 0}
+          quickEntries={frequentEntries(expenses)}
           onClose={() => setAdding(false)}
           onSave={(exp) => {
             const isEdit = !!editing

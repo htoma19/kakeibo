@@ -6,6 +6,7 @@ export default function AddExpenseSheet({
   initial,
   todayTotal,
   hourlyWage,
+  quickEntries = [],
   onClose,
   onSave,
 }) {
@@ -44,6 +45,30 @@ export default function AddExpenseSheet({
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <h2 className="sheet-title">{initial ? '記録を編集' : '支出を入力'}</h2>
+
+        {!initial && quickEntries.length > 0 && (
+          <div className="quick-row">
+            {quickEntries.map((q, i) => {
+              const c = categories.find((x) => x.id === q.categoryId)
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  className="quick-chip"
+                  onClick={() => {
+                    setAmount(String(q.amount))
+                    setCategoryId(q.categoryId)
+                    setMemo(q.memo)
+                  }}
+                >
+                  <span>{c?.icon || '📦'}</span>
+                  <span className="quick-label">{q.memo || c?.name || ''}</span>
+                  <b>{formatYen(q.amount)}</b>
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         <div className="amount-input-wrap">
           <span className="yen-sign">¥</span>

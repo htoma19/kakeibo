@@ -37,6 +37,36 @@ export function startOfMonth(d = new Date()) {
 
 export const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土']
 
+// よく使う支出（直近90日で2回以上登場した「金額×カテゴリ×メモ」の組）
+// 入力シートのワンタップ候補に使う。登録不要で履歴から自動学習する
+export function frequentEntries(expenses, limit = 6) {
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - 90)
+  const cutStr = toDateStr(cutoff)
+  const map = new Map()
+  expenses.forEach((e) => {
+    if (e.date < cutStr) return
+    const key = `${e.categoryId}|${e.amount}|${e.memo || ''}`
+    const cur = map.get(key)
+    if (cur) {
+      cur.count++
+      if (e.date > cur.lastDate) cur.lastDate = e.date
+    } else {
+      map.set(key, {
+        categoryId: e.categoryId,
+        amount: e.amount,
+        memo: e.memo || '',
+        count: 1,
+        lastDate: e.date,
+      })
+    }
+  })
+  return [...map.values()]
+    .filter((x) => x.count >= 2)
+    .sort((a, b) => b.count - a.count || b.lastDate.localeCompare(a.lastDate))
+    .slice(0, limit)
+}
+
 // 2つの「YYYY-MM-DD」間の日数（両端含む）
 export function daysInclusive(startStr, endStr) {
   const a = parseDateStr(startStr)
