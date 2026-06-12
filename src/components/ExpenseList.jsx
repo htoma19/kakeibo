@@ -1,7 +1,13 @@
 import { formatYen, MOOD_EMOJI } from '../utils'
 
-// 支出の一覧（ホーム・日別明細で共通利用）
-export default function ExpenseList({ expenses, categories, onEdit, onDelete }) {
+// 支出の一覧（ホーム・日別明細・月次で共通利用）
+export default function ExpenseList({
+  expenses,
+  categories,
+  onEdit,
+  onDelete,
+  showDate = false,
+}) {
   const catMap = Object.fromEntries(categories.map((c) => [c.id, c]))
   return (
     <ul className="expense-list">
@@ -17,7 +23,14 @@ export default function ExpenseList({ expenses, categories, onEdit, onDelete }) 
             </span>
             <span className="expense-main">
               <span className="expense-cat">{c?.name || '不明'}</span>
-              {e.memo && <span className="expense-memo">{e.memo}</span>}
+              {(showDate || e.memo) && (
+                <span className="expense-memo">
+                  {showDate &&
+                    `${Number(e.date.slice(5, 7))}/${Number(e.date.slice(8, 10))}`}
+                  {showDate && e.memo && '・'}
+                  {e.memo}
+                </span>
+              )}
             </span>
             {e.mood && (
               <span className="expense-mood">{MOOD_EMOJI[e.mood]}</span>

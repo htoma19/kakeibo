@@ -36,10 +36,11 @@ export default function Home({ expenses, categories, settings, onEdit, onDelete 
   const over = budget > 0 && remaining < 0
 
   // 今月、目安より「浮いた額」（記録開始日 or 月初〜今日）
+  // 記録が1件もない間は表示しない（全額「浮いた」となり誤解を招くため）
   let saved = null
-  if (budget > 0) {
-    const first = firstExpenseDate(expenses)
-    const startStr = first && first > monthStart ? first : monthStart
+  const first = firstExpenseDate(expenses)
+  if (budget > 0 && first) {
+    const startStr = first > monthStart ? first : monthStart
     if (startStr <= today) {
       const elapsed = daysInclusive(startStr, today)
       const spent = expenses

@@ -10,6 +10,7 @@ import { todayStr } from './utils'
 import TabBar from './components/TabBar'
 import Home from './components/Home'
 import Review from './components/Review'
+import MonthlyReport from './components/MonthlyReport'
 import Settings from './components/Settings'
 import AddExpenseSheet from './components/AddExpenseSheet'
 
@@ -127,6 +128,18 @@ export default function App() {
         )}
         {tab === 'review' && (
           <Review
+            expenses={expenses}
+            categories={categories}
+            settings={settings}
+            onEdit={(exp) => {
+              setEditing(exp)
+              setAdding(true)
+            }}
+            onDelete={deleteExpense}
+          />
+        )}
+        {tab === 'report' && (
+          <MonthlyReport
             expenses={expenses}
             categories={categories}
             settings={settings}
