@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { formatYen, todayStr, formatHours, MOODS } from '../utils'
+import { formatYen, todayStr, formatHours } from '../utils'
 
 export default function AddExpenseSheet({
   categories,
@@ -16,11 +16,12 @@ export default function AddExpenseSheet({
   )
   const [memo, setMemo] = useState(initial?.memo || '')
   const [date, setDate] = useState(initial?.date || todayStr())
-  const [mood, setMood] = useState(initial?.mood || null)
+  const [catPickerOpen, setCatPickerOpen] = useState(false)
 
   const amountNum = parseInt(amount, 10) || 0
   const canSave = amountNum > 0 && categoryId
   const hours = formatHours(amountNum, hourlyWage)
+  const selCat = categories.find((c) => c.id === categoryId)
 
   function pressKey(k) {
     setAmount((prev) => {
@@ -38,7 +39,6 @@ export default function AddExpenseSheet({
       categoryId,
       memo: memo.trim(),
       date,
-      mood,
       createdAt: initial?.createdAt || new Date().toISOString(),
     })
   }
@@ -109,44 +109,26 @@ export default function AddExpenseSheet({
           )}
         </div>
 
-        <div className="cat-chips">
-          {categories.map((c) => {
-            const selected = categoryId === c.id
-            return (
-              <button
-                key={c.id}
-                className={'chip' + (selected ? ' selected' : '')}
-                style={
-                  selected
-                    ? {
-                        background: c.color,
-                        borderColor: c.color,
-                        color: '#fff',
-                        boxShadow: `0 3px 16px ${c.color}88`,
-                      }
-                    : { borderColor: c.color }
-                }
-                onClick={() => setCategoryId(c.id)}
+        <button
+          type="button"
+          className="cat-trigger"
+          onClick={() => setCatPickerOpen(true)}
+        >
+          {selCat ? (
+            <>
+              <span
+                className="expense-icon"
+                style={{ background: selCat.color + '22' }}
               >
-                {c.icon} {c.name}
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="mood-row">
-          {MOODS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              className={'mood-btn' + (mood === m.id ? ' selected' : '')}
-              onClick={() => setMood(mood === m.id ? null : m.id)}
-            >
-              <span className="mood-emoji">{m.emoji}</span>
-              {m.label}
-            </button>
-          ))}
-        </div>
+                {selCat.icon}
+              </span>
+              <span className="cat-trigger-name">{selCat.name}</span>
+            </>
+          ) : (
+            <span className="cat-trigger-name muted">カテゴリを選ぶ</span>
+          )}
+          <span className="cat-trigger-chev">›</span>
+        </button>
 
         <input
           className="memo-input"
@@ -176,6 +158,48 @@ export default function AddExpenseSheet({
           </button>
         </div>
       </div>
+
+      {catPickerOpen && (
+        <div
+          className="sheet-backdrop"
+          style={{ zIndex: 36 }}
+          onClick={(e) => {
+            e.stopPropagation()
+            setCatPickerOpen(false)
+          }}
+        >
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-handle" />
+            <h2 className="sheet-title">カテゴリを選ぶ</h2>
+            <ul className="cat-pick-list">
+              {categories.map((c) => (
+                <li key={c.id}>
+                  <button
+                    className={
+                      'cat-pick-row' + (categoryId === c.id ? ' selected' : '')
+                    }
+                    onClick={() => {
+                      setCategoryId(c.id)
+                      setCatPickerOpen(false)
+                    }}
+                  >
+                    <span
+                      className="expense-icon"
+                      style={{ background: c.color + '22' }}
+                    >
+                      {c.icon}
+                    </span>
+                    <span className="cat-pick-name">{c.name}</span>
+                    {categoryId === c.id && (
+                      <span className="cat-pick-check">✓</span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

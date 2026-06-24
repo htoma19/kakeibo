@@ -437,6 +437,70 @@ input {
   color: var(--muted);
 }
 
+/* ===== カテゴリ選択（ボタン→シート） ===== */
+.cat-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 1rem;
+  color: var(--text);
+}
+.cat-trigger-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 600;
+}
+.cat-trigger-name.muted {
+  color: var(--muted);
+  font-weight: 500;
+}
+.cat-trigger-chev {
+  color: var(--muted);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.cat-pick-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.cat-pick-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 12px 4px;
+  font-size: 1.02rem;
+  color: var(--text);
+  text-align: left;
+}
+.cat-pick-list li + li .cat-pick-row {
+  border-top: 1px solid var(--border);
+}
+.cat-pick-name {
+  flex: 1;
+  font-weight: 600;
+}
+.cat-pick-row.selected {
+  color: var(--accent);
+}
+.cat-pick-check {
+  color: var(--accent);
+  font-weight: 800;
+}
+
 /* ===== アプリ内テンキー ===== */
 .keypad {
   display: grid;
