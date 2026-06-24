@@ -22,6 +22,14 @@ export default function AddExpenseSheet({
   const canSave = amountNum > 0 && categoryId
   const hours = formatHours(amountNum, hourlyWage)
 
+  function pressKey(k) {
+    setAmount((prev) => {
+      if (k === 'del') return prev.slice(0, -1)
+      const num = parseInt((prev || '') + k, 10) || 0
+      return num > 9999999 ? prev : String(num)
+    })
+  }
+
   function handleSave() {
     if (!canSave) return
     onSave({
@@ -72,16 +80,9 @@ export default function AddExpenseSheet({
 
         <div className="amount-input-wrap">
           <span className="yen-sign">¥</span>
-          <input
-            className="amount-input"
-            type="number"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            placeholder="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            autoFocus
-          />
+          <span className={'amount-display' + (amountNum === 0 ? ' empty' : '')}>
+            {amountNum.toLocaleString('ja-JP')}
+          </span>
         </div>
 
         {date === todayStr() && amountNum > 0 && (
@@ -92,6 +93,21 @@ export default function AddExpenseSheet({
         {hours && amountNum > 0 && (
           <p className="hours-hint">⏱ あなたの時給で約 {hours}の労働</p>
         )}
+
+        <div className="keypad">
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '00', '0', 'del'].map(
+            (k) => (
+              <button
+                key={k}
+                type="button"
+                className={'keypad-btn' + (k === 'del' ? ' keypad-del' : '')}
+                onClick={() => pressKey(k)}
+              >
+                {k === 'del' ? '⌫' : k}
+              </button>
+            ),
+          )}
+        </div>
 
         <div className="cat-chips">
           {categories.map((c) => {

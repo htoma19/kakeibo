@@ -425,6 +425,47 @@ input {
   -webkit-appearance: none;
   margin: 0;
 }
+.amount-display {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text);
+  min-width: 1.2em;
+  text-align: center;
+}
+.amount-display.empty {
+  color: var(--muted);
+}
+
+/* ===== アプリ内テンキー ===== */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.keypad-btn {
+  font-size: 1.55rem;
+  font-weight: 600;
+  padding: 13px 0;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  transition: background 0.08s, transform 0.08s;
+}
+.keypad-btn:active {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(0.96);
+}
+.keypad-del {
+  font-size: 1.3rem;
+  color: var(--muted);
+}
 .projected {
   text-align: center;
   color: var(--muted);
