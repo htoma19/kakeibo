@@ -304,6 +304,7 @@ input {
   animation: slideup 0.25s ease;
   max-height: calc(100dvh - var(--kb) - 30px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 @keyframes slideup {
   from {
@@ -622,7 +623,19 @@ input {
   font-weight: 600;
 }
 .detail-panel {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
   animation: fade 0.15s ease;
+}
+.detail-panel .memo-input,
+.detail-panel .date-input {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 0;
+  box-sizing: border-box;
 }
 .sheet-actions {
   display: flex;
