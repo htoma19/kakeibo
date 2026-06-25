@@ -288,7 +288,7 @@ input {
   align-items: flex-end;
   animation: fade 0.2s ease;
   /* キーボードの高さ分だけ持ち上げ、シートが隠れないようにする */
-  padding-bottom: var(--kb);
+  padding-bottom: calc(var(--kb) + 14px);
   transition: padding-bottom 0.2s ease;
 }
 .sheet {
@@ -302,7 +302,7 @@ input {
   border-radius: 24px 24px 0 0;
   padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   animation: slideup 0.25s ease;
-  max-height: calc(100dvh - var(--kb) - 16px);
+  max-height: calc(100dvh - var(--kb) - 30px);
   overflow-y: auto;
 }
 @keyframes slideup {
@@ -623,7 +623,7 @@ input {
   display: flex;
   gap: 12px;
   margin: 12px -20px 0;
-  padding: 12px 20px 0;
+  padding: 12px 20px 14px;
   position: sticky;
   bottom: 0;
   background: rgba(255, 255, 255, 0.8);
