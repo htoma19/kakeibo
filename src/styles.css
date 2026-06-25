@@ -619,6 +619,9 @@ input {
 .detail-panel {
   animation: fade 0.15s ease;
 }
+.detail-panel .date-input {
+  width: min(100%, 190px);
+}
 .sheet-actions {
   display: flex;
   gap: 12px;
