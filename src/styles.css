@@ -267,13 +267,13 @@ input {
   justify-content: center;
   gap: 2px;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.66rem;
 }
 .tab.active {
   color: var(--accent);
 }
 .tab-icon {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 /* ---------- Sheet ---------- */
@@ -474,6 +474,22 @@ input {
   max-height: 60vh;
   overflow-y: auto;
 }
+.cat-search {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.16)
+  );
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  color: var(--text);
+}
 .cat-pick-row {
   display: flex;
   align-items: center;
@@ -499,6 +515,12 @@ input {
 .cat-pick-check {
   color: var(--accent);
   font-weight: 800;
+}
+.cat-pick-empty {
+  padding: 18px 4px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.95rem;
 }
 
 /* ===== アプリ内テンキー ===== */
@@ -579,6 +601,24 @@ input {
     0 2px 8px rgba(31, 25, 20, 0.06);
   color: var(--text);
 }
+.detail-toggle {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 11px 14px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.36);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+.detail-panel {
+  animation: fade 0.15s ease;
+}
 .sheet-actions {
   display: flex;
   gap: 12px;
@@ -589,6 +629,7 @@ input {
   background: rgba(255, 255, 255, 0.8);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   backdrop-filter: blur(24px) saturate(180%);
+  flex-wrap: wrap;
 }
 .btn-primary,
 .btn-secondary {
@@ -602,6 +643,10 @@ input {
 .btn-primary {
   background: var(--accent);
   color: #fff;
+}
+.btn-continue {
+  flex-basis: 100%;
+  background: #134e4a;
 }
 .btn-primary:disabled {
   opacity: 0.4;
@@ -864,6 +909,59 @@ input {
   z-index: 40;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   animation: toastIn 0.25s ease;
+}
+
+/* ---------- History Search ---------- */
+.history-filter {
+  display: grid;
+  gap: 10px;
+}
+.history-select {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-size: 1rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.16)
+  );
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  color: var(--text);
+}
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.filter-grid label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.filter-grid .date-input {
+  margin-bottom: 0;
+}
+.history-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+  color: var(--text);
+  font-weight: 700;
+}
+.text-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-weight: 700;
+  padding: 6px 0;
+  white-space: nowrap;
 }
 @keyframes toastIn {
   from {

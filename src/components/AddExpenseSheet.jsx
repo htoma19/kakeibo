@@ -9,6 +9,7 @@ export default function AddExpenseSheet({
   quickEntries = [],
   onClose,
   onSave,
+  onSaveAndContinue,
 }) {
   const [amount, setAmount] = useState(initial ? String(initial.amount) : '')
   const [categoryId, setCategoryId] = useState(
@@ -17,11 +18,23 @@ export default function AddExpenseSheet({
   const [memo, setMemo] = useState(initial?.memo || '')
   const [date, setDate] = useState(initial?.date || todayStr())
   const [catPickerOpen, setCatPickerOpen] = useState(false)
+  const [catQuery, setCatQuery] = useState('')
+  const [detailsOpen, setDetailsOpen] = useState(
+    !!initial && (!!initial.memo || initial.date !== todayStr()),
+  )
 
   const amountNum = parseInt(amount, 10) || 0
   const canSave = amountNum > 0 && categoryId
   const hours = formatHours(amountNum, hourlyWage)
   const selCat = categories.find((c) => c.id === categoryId)
+  const filteredCategories = categories.filter((c) => {
+    const q = catQuery.trim().toLowerCase()
+    if (!q) return true
+    return (
+      c.name.toLowerCase().includes(q) ||
+      (c.icon || '').includes(catQuery.trim())
+    )
+  })
 
   function pressKey(k) {
     setAmount((prev) => {
@@ -41,6 +54,20 @@ export default function AddExpenseSheet({
       date,
       createdAt: initial?.createdAt || new Date().toISOString(),
     })
+  }
+
+  function handleSaveAndContinue() {
+    if (!canSave || !onSaveAndContinue) return
+    onSaveAndContinue({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      amount: amountNum,
+      categoryId,
+      memo: memo.trim(),
+      date,
+      createdAt: new Date().toISOString(),
+    })
+    setAmount('')
+    setMemo('')
   }
 
   // 編集中の今日の支出は二重に数えないよう差し引く
@@ -130,20 +157,33 @@ export default function AddExpenseSheet({
           <span className="cat-trigger-chev">›</span>
         </button>
 
-        <input
-          className="memo-input"
-          type="text"
-          placeholder="メモ（任意）"
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-        />
-        <input
-          className="date-input"
-          type="date"
-          value={date}
-          max={todayStr()}
-          onChange={(e) => setDate(e.target.value)}
-        />
+        <button
+          type="button"
+          className="detail-toggle"
+          onClick={() => setDetailsOpen((v) => !v)}
+        >
+          <span>{detailsOpen ? '詳細を閉じる' : 'メモ・日付を追加'}</span>
+          <span>{detailsOpen ? '⌃' : '⌄'}</span>
+        </button>
+
+        {detailsOpen && (
+          <div className="detail-panel">
+            <input
+              className="memo-input"
+              type="text"
+              placeholder="メモ（任意）"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+            />
+            <input
+              className="date-input"
+              type="date"
+              value={date}
+              max={todayStr()}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+        )}
 
         <div className="sheet-actions">
           <button className="btn-secondary" onClick={onClose}>
@@ -156,6 +196,15 @@ export default function AddExpenseSheet({
           >
             保存
           </button>
+          {!initial && (
+            <button
+              className="btn-primary btn-continue"
+              disabled={!canSave}
+              onClick={handleSaveAndContinue}
+            >
+              保存して続ける
+            </button>
+          )}
         </div>
       </div>
 
@@ -171,8 +220,16 @@ export default function AddExpenseSheet({
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-handle" />
             <h2 className="sheet-title">カテゴリを選ぶ</h2>
+            <input
+              className="cat-search"
+              type="search"
+              placeholder="カテゴリを検索"
+              value={catQuery}
+              autoFocus
+              onChange={(e) => setCatQuery(e.target.value)}
+            />
             <ul className="cat-pick-list">
-              {categories.map((c) => (
+              {filteredCategories.map((c) => (
                 <li key={c.id}>
                   <button
                     className={
@@ -196,6 +253,9 @@ export default function AddExpenseSheet({
                   </button>
                 </li>
               ))}
+              {filteredCategories.length === 0 && (
+                <li className="cat-pick-empty">該当するカテゴリがありません</li>
+              )}
             </ul>
           </div>
         </div>

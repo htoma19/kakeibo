@@ -12,6 +12,7 @@ import TabBar from './components/TabBar'
 import Home from './components/Home'
 import Review from './components/Review'
 import MonthlyReport from './components/MonthlyReport'
+import HistorySearch from './components/HistorySearch'
 import Settings from './components/Settings'
 import AddExpenseSheet from './components/AddExpenseSheet'
 
@@ -166,6 +167,17 @@ export default function App() {
             onDelete={deleteExpense}
           />
         )}
+        {tab === 'history' && (
+          <HistorySearch
+            expenses={expenses}
+            categories={categories}
+            onEdit={(exp) => {
+              setEditing(exp)
+              setAdding(true)
+            }}
+            onDelete={deleteExpense}
+          />
+        )}
         {tab === 'settings' && (
           <Settings
             expenses={expenses}
@@ -206,6 +218,10 @@ export default function App() {
             upsertExpense(exp)
             setAdding(false)
             showToast(isEdit ? '更新しました' : '記録しました ✓')
+          }}
+          onSaveAndContinue={(exp) => {
+            upsertExpense(exp)
+            showToast('記録しました ✓')
           }}
         />
       )}

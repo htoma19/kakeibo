@@ -2,6 +2,7 @@ const ITEMS = [
   { id: 'home', label: 'ホーム', icon: '🏠' },
   { id: 'review', label: '振り返り', icon: '📊' },
   { id: 'report', label: 'レポート', icon: '📅' },
+  { id: 'history', label: '履歴', icon: '🔍' },
   { id: 'settings', label: '設定', icon: '⚙️' },
 ]
 
