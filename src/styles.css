@@ -584,7 +584,12 @@ input {
 }
 .memo-input,
 .date-input {
+  display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 14px;
   padding: 13px 14px;
