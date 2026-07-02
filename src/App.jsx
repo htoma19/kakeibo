@@ -6,7 +6,7 @@ import {
   saveSettings,
   requestPersist,
 } from './db'
-import { todayStr, frequentEntries } from './utils'
+import { todayStr, frequentEntries, sumAmount } from './utils'
 import { exportBackupJSON, backupReminderDue } from './backup'
 import TabBar from './components/TabBar'
 import Home from './components/Home'
@@ -59,6 +59,12 @@ export default function App() {
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToast(null), 1600)
     if (navigator.vibrate) navigator.vibrate(8)
+  }
+
+  // 記録をタップして編集を始める（各画面共通）
+  function startEdit(exp) {
+    setEditing(exp)
+    setAdding(true)
   }
 
   function upsertExpense(exp) {
@@ -121,9 +127,7 @@ export default function App() {
   const backupDue = backupReminderDue(expenses, settings)
 
   const today = todayStr()
-  const todayTotal = expenses
-    .filter((e) => e.date === today)
-    .reduce((a, e) => a + e.amount, 0)
+  const todayTotal = sumAmount(expenses.filter((e) => e.date === today))
 
   return (
     <div className="app">
@@ -136,10 +140,7 @@ export default function App() {
             backupDue={backupDue}
             onBackup={doBackup}
             onSnoozeBackup={snoozeBackup}
-            onEdit={(exp) => {
-              setEditing(exp)
-              setAdding(true)
-            }}
+            onEdit={startEdit}
             onDelete={deleteExpense}
           />
         )}
@@ -148,10 +149,7 @@ export default function App() {
             expenses={expenses}
             categories={categories}
             settings={settings}
-            onEdit={(exp) => {
-              setEditing(exp)
-              setAdding(true)
-            }}
+            onEdit={startEdit}
             onDelete={deleteExpense}
           />
         )}
@@ -160,10 +158,7 @@ export default function App() {
             expenses={expenses}
             categories={categories}
             settings={settings}
-            onEdit={(exp) => {
-              setEditing(exp)
-              setAdding(true)
-            }}
+            onEdit={startEdit}
             onDelete={deleteExpense}
           />
         )}
@@ -171,10 +166,7 @@ export default function App() {
           <HistorySearch
             expenses={expenses}
             categories={categories}
-            onEdit={(exp) => {
-              setEditing(exp)
-              setAdding(true)
-            }}
+            onEdit={startEdit}
             onDelete={deleteExpense}
           />
         )}

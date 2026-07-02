@@ -2,6 +2,36 @@ import { useRef, useState } from 'react'
 import { exportBackupJSON, downloadFile, stamp } from '../backup'
 import CategoryEditSheet from './CategoryEditSheet'
 
+// 「¥ + 数字入力 + 保存」の共通セクション（1日の目安額・時給で使用）
+function MoneySection({ title, value, placeholder, note, onChange, onSave }) {
+  return (
+    <section className="settings-section">
+      <h2 className="section-title">{title}</h2>
+      <div className="budget-row">
+        <span className="yen-sign" style={{ fontSize: '1.3rem' }}>
+          ¥
+        </span>
+        <input
+          type="number"
+          inputMode="numeric"
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onSave}
+        />
+        <button
+          className="btn-primary"
+          style={{ flex: '0 0 auto', padding: '12px 18px' }}
+          onClick={onSave}
+        >
+          保存
+        </button>
+      </div>
+      <p className="note">{note}</p>
+    </section>
+  )
+}
+
 export default function Settings({
   expenses,
   categories,
@@ -16,14 +46,9 @@ export default function Settings({
   const [catSheetOpen, setCatSheetOpen] = useState(false)
   const [catEditing, setCatEditing] = useState(null) // null = 追加モード
 
-  function saveBudget() {
-    const n = parseInt(budget, 10) || 0
-    onUpdateSettings({ ...settings, dailyBudget: n })
-  }
-
-  function saveWage() {
-    const n = parseInt(wage, 10) || 0
-    onUpdateSettings({ ...settings, hourlyWage: n })
+  // 入力欄の文字列を数値にして設定へ保存（空欄や数字以外は 0 扱い）
+  function saveNumberSetting(key, raw) {
+    onUpdateSettings({ ...settings, [key]: parseInt(raw, 10) || 0 })
   }
 
   function openAdd() {
@@ -111,60 +136,22 @@ export default function Settings({
     <div>
       <h1 className="page-title">設定</h1>
 
-      <section className="settings-section">
-        <h2 className="section-title">1日の目安額</h2>
-        <div className="budget-row">
-          <span className="yen-sign" style={{ fontSize: '1.3rem' }}>
-            ¥
-          </span>
-          <input
-            type="number"
-            inputMode="numeric"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            onBlur={saveBudget}
-          />
-          <button
-            className="btn-primary"
-            style={{ flex: '0 0 auto', padding: '12px 18px' }}
-            onClick={saveBudget}
-          >
-            保存
-          </button>
-        </div>
-        <p className="note">
-          ホーム画面の「あと◯◯円」やカレンダーの色に使われます。0
-          にすると非表示になります。
-        </p>
-      </section>
+      <MoneySection
+        title="1日の目安額"
+        value={budget}
+        onChange={setBudget}
+        onSave={() => saveNumberSetting('dailyBudget', budget)}
+        note="ホーム画面の「あと◯◯円」やカレンダーの色に使われます。0 にすると非表示になります。"
+      />
 
-      <section className="settings-section">
-        <h2 className="section-title">時給（任意）</h2>
-        <div className="budget-row">
-          <span className="yen-sign" style={{ fontSize: '1.3rem' }}>
-            ¥
-          </span>
-          <input
-            type="number"
-            inputMode="numeric"
-            value={wage}
-            onChange={(e) => setWage(e.target.value)}
-            onBlur={saveWage}
-            placeholder="例: 1500"
-          />
-          <button
-            className="btn-primary"
-            style={{ flex: '0 0 auto', padding: '12px 18px' }}
-            onClick={saveWage}
-          >
-            保存
-          </button>
-        </div>
-        <p className="note">
-          設定すると、支出を「労働◯時間分」に換算して表示します（入力画面・ホーム）。0
-          で非表示。
-        </p>
-      </section>
+      <MoneySection
+        title="時給（任意）"
+        value={wage}
+        placeholder="例: 1500"
+        onChange={setWage}
+        onSave={() => saveNumberSetting('hourlyWage', wage)}
+        note="設定すると、支出を「労働◯時間分」に換算して表示します（入力画面・ホーム）。0 で非表示。"
+      />
 
       <section className="settings-section">
         <h2 className="section-title">カテゴリ</h2>

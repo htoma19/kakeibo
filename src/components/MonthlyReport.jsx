@@ -1,25 +1,21 @@
 import { useState } from 'react'
 import { Doughnut, Bar } from 'react-chartjs-2'
 import {
-  Chart as ChartJS,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import { formatYen, toDateStr } from '../utils'
+  makeBarData,
+  makeBarOptions,
+  makeDonutData,
+  makeDonutOptions,
+} from '../chart'
+import {
+  formatYen,
+  toDateStr,
+  sumAmount,
+  filterByRange,
+  totalsByCategory,
+  sortNewestFirst,
+} from '../utils'
 import ExpenseList from './ExpenseList'
-
-ChartJS.register(
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-)
+import Sheet from './Sheet'
 
 // マネーフォワード風レポート（月次/年次の切替・期間送り・目安−支出=残り・内訳）
 export default function MonthlyReport({
@@ -65,82 +61,42 @@ export default function MonthlyReport({
     setOffset = setYearOffset
   }
 
-  const inRange = expenses.filter((e) => e.date >= startStr && e.date <= endStr)
-  const total = inRange.reduce((a, e) => a + e.amount, 0)
+  const inRange = filterByRange(expenses, startStr, endStr)
+  const total = sumAmount(inRange)
   const remain = periodBudget - total
 
-  const byCat = categories
-    .map((c) => ({
-      c,
-      total: inRange
-        .filter((e) => e.categoryId === c.id)
-        .reduce((a, e) => a + e.amount, 0),
-    }))
-    .filter((x) => x.total > 0)
-    .sort((a, b) => b.total - a.total)
+  const byCat = totalsByCategory(inRange, categories)
 
-  const donutData = {
-    labels: byCat.map((x) => x.c.name),
-    datasets: [
-      {
-        data: byCat.map((x) => x.total),
-        backgroundColor: byCat.map((x) => x.c.color),
-        borderWidth: 0,
-      },
-    ],
-  }
-  const donutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '62%',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: { label: (ctx) => `${ctx.label}: ${formatYen(ctx.parsed)}` },
-      },
-    },
-  }
+  const donutData = makeDonutData(byCat)
+  const donutOptions = makeDonutOptions({ cutout: '62%', showLegend: false })
 
   // 年表示：月別合計の棒グラフ（タップでその月へ）
   const byMonth =
     period === 'year'
       ? Array.from({ length: 12 }, (_, i) => {
           const p = `${y}-${String(i + 1).padStart(2, '0')}`
-          return inRange
-            .filter((e) => e.date.startsWith(p))
-            .reduce((a, e) => a + e.amount, 0)
+          return sumAmount(inRange.filter((e) => e.date.startsWith(p)))
         })
       : []
-  const barData = {
-    labels: Array.from({ length: 12 }, (_, i) => `${i + 1}月`),
-    datasets: [{ data: byMonth, backgroundColor: '#0f766e', borderRadius: 4 }],
-  }
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: (ctx) => formatYen(ctx.parsed.y) } },
-    },
-    scales: { y: { beginAtZero: true, ticks: { callback: (v) => '¥' + v } } },
-    onClick: (evt, elements) => {
-      if (!elements.length) return
-      const idx = elements[0].index
-      const target = (y - now.getFullYear()) * 12 + (idx - now.getMonth())
-      if (target <= 0) {
-        setMonthOffset(target)
-        setPeriod('month')
-      }
-    },
-  }
+  const barData = makeBarData(
+    Array.from({ length: 12 }, (_, i) => `${i + 1}月`),
+    byMonth,
+  )
+  const barOptions = makeBarOptions((evt, elements) => {
+    if (!elements.length) return
+    const idx = elements[0].index
+    const target = (y - now.getFullYear()) * 12 + (idx - now.getMonth())
+    if (target <= 0) {
+      setMonthOffset(target)
+      setPeriod('month')
+    }
+  })
 
   const selCat = selCatId ? categories.find((c) => c.id === selCatId) : null
   const selExpenses = selCat
-    ? inRange
-        .filter((e) => e.categoryId === selCat.id)
-        .sort((a, b) => b.date.localeCompare(a.date))
+    ? sortNewestFirst(inRange.filter((e) => e.categoryId === selCat.id))
     : []
-  const selTotal = selExpenses.reduce((a, e) => a + e.amount, 0)
+  const selTotal = sumAmount(selExpenses)
   const selTitle =
     period === 'month' ? `${m + 1}月` : `${y}年`
 
@@ -262,36 +218,32 @@ export default function MonthlyReport({
       )}
 
       {selCat && (
-        <div className="sheet-backdrop" onClick={() => setSelCatId(null)}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="sheet-handle" />
-            <h2 className="sheet-title">
-              {selCat.icon} {selCat.name}（{selTitle}）
-            </h2>
-            <p className="day-total">{formatYen(selTotal)}</p>
-            {selExpenses.length === 0 ? (
-              <p className="empty">記録はありません</p>
-            ) : (
-              <ExpenseList
-                expenses={selExpenses}
-                categories={categories}
-                showDate
-                onEdit={(exp) => {
-                  setSelCatId(null)
-                  onEdit(exp)
-                }}
-                onDelete={onDelete}
-              />
-            )}
-            <button
-              className="btn-secondary"
-              style={{ width: '100%', marginTop: 14 }}
-              onClick={() => setSelCatId(null)}
-            >
-              閉じる
-            </button>
-          </div>
-        </div>
+        <Sheet
+          title={`${selCat.icon} ${selCat.name}（${selTitle}）`}
+          onClose={() => setSelCatId(null)}
+        >
+          <p className="day-total">{formatYen(selTotal)}</p>
+          {selExpenses.length === 0 ? (
+            <p className="empty">記録はありません</p>
+          ) : (
+            <ExpenseList
+              expenses={selExpenses}
+              categories={categories}
+              showDate
+              onEdit={(exp) => {
+                setSelCatId(null)
+                onEdit(exp)
+              }}
+              onDelete={onDelete}
+            />
+          )}
+          <button
+            className="btn-secondary sheet-close-btn"
+            onClick={() => setSelCatId(null)}
+          >
+            閉じる
+          </button>
+        </Sheet>
       )}
     </div>
   )

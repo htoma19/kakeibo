@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { Bar, Doughnut } from 'react-chartjs-2'
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js'
+  makeBarData,
+  makeBarOptions,
+  makeDonutData,
+  makeDonutOptions,
+} from '../chart'
 import {
   formatYen,
   todayStr,
@@ -19,20 +16,12 @@ import {
   WEEKDAYS,
   daysInclusive,
   firstExpenseDate,
+  sumAmount,
+  filterByRange,
+  totalsByCategory,
 } from '../utils'
 import MonthCalendar from './MonthCalendar'
 import DayDetailSheet from './DayDetailSheet'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-)
-
-const GREEN = '#16a34a'
 
 export default function Review({ expenses, categories, settings, onEdit, onDelete }) {
   const [period, setPeriod] = useState('week') // 'week' | 'month'
@@ -53,32 +42,20 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
     cur.setDate(cur.getDate() + 1)
   }
 
-  const inRange = expenses.filter((e) => e.date >= startStr && e.date <= endStr)
-  const total = inRange.reduce((a, e) => a + e.amount, 0)
+  const inRange = filterByRange(expenses, startStr, endStr)
+  const total = sumAmount(inRange)
   const elapsedDays = days.length
   const avg = elapsedDays ? total / elapsedDays : 0
 
   // 日別合計
-  const byDay = days.map((d) =>
-    inRange.filter((e) => e.date === d).reduce((a, e) => a + e.amount, 0),
-  )
+  const byDay = days.map((d) => sumAmount(inRange.filter((e) => e.date === d)))
 
   // カテゴリ別合計（多い順）
-  const byCat = categories
-    .map((c) => ({
-      c,
-      total: inRange
-        .filter((e) => e.categoryId === c.id)
-        .reduce((a, e) => a + e.amount, 0),
-    }))
-    .filter((x) => x.total > 0)
-    .sort((a, b) => b.total - a.total)
+  const byCat = totalsByCategory(inRange, categories)
 
   // --- インサイト ---
   function sumRange(s, e) {
-    return expenses
-      .filter((x) => x.date >= s && x.date <= e)
-      .reduce((a, x) => a + x.amount, 0)
+    return sumAmount(filterByRange(expenses, s, e))
   }
 
   // 前期間の「同時期（同じ経過日数）」の合計
@@ -111,52 +88,23 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
   const daysTracked = trackingStart ? daysInclusive(trackingStart, endStr) : 0
   const annualByCat =
     daysTracked >= 3
-      ? categories
-          .map((c) => {
-            const tot = expenses
-              .filter((e) => e.categoryId === c.id)
-              .reduce((a, e) => a + e.amount, 0)
-            return { c, annual: Math.round((tot / daysTracked) * 365) }
-          })
+      ? totalsByCategory(expenses, categories)
+          .map((x) => ({
+            c: x.c,
+            annual: Math.round((x.total / daysTracked) * 365),
+          }))
           .filter((x) => x.annual > 0)
-          .sort((a, b) => b.annual - a.annual)
       : []
   const annualTotal = annualByCat.reduce((a, x) => a + x.annual, 0)
 
-  const barData = {
-    labels: days.map((d) => WEEKDAYS[parseDateStr(d).getDay()]),
-    datasets: [{ data: byDay, backgroundColor: '#0f766e', borderRadius: 4 }],
-  }
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: (ctx) => formatYen(ctx.parsed.y) } },
-    },
-    scales: { y: { beginAtZero: true, ticks: { callback: (v) => '¥' + v } } },
-  }
+  const barData = makeBarData(
+    days.map((d) => WEEKDAYS[parseDateStr(d).getDay()]),
+    byDay,
+  )
+  const barOptions = makeBarOptions()
 
-  const donutData = {
-    labels: byCat.map((x) => x.c.name),
-    datasets: [
-      {
-        data: byCat.map((x) => x.total),
-        backgroundColor: byCat.map((x) => x.c.color),
-        borderWidth: 0,
-      },
-    ],
-  }
-  const donutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom' },
-      tooltip: {
-        callbacks: { label: (ctx) => `${ctx.label}: ${formatYen(ctx.parsed)}` },
-      },
-    },
-  }
+  const donutData = makeDonutData(byCat)
+  const donutOptions = makeDonutOptions()
 
   return (
     <div>
@@ -205,7 +153,9 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
                   {formatYen(diff)} 多い ↑
                 </span>
               ) : (
-                <span style={{ color: GREEN }}>{formatYen(-diff)} 少ない ↓</span>
+                <span style={{ color: 'var(--ok)' }}>
+                  {formatYen(-diff)} 少ない ↓
+                </span>
               )}
             </span>
           </div>
@@ -232,7 +182,7 @@ export default function Review({ expenses, categories, settings, onEdit, onDelet
                 <div className="insight-sub">
                   月の目安 {formatYen(monthlyBudget)}・
                   {projected <= monthlyBudget ? (
-                    <span style={{ color: GREEN }}>目安以内のペース</span>
+                    <span style={{ color: 'var(--ok)' }}>目安以内のペース</span>
                   ) : (
                     <span style={{ color: 'var(--danger)' }}>
                       約 {formatYen(projected - monthlyBudget)} 超えるペース

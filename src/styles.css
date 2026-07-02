@@ -6,6 +6,7 @@
   --text: #0f172a;
   --muted: #51607a;
   --danger: #dc2626;
+  --ok: #16a34a;
   --border: #d7deea;
   --glass-border: rgba(255, 255, 255, 0.65);
   --glass-blur: blur(18px) saturate(160%);
@@ -672,6 +673,11 @@ input {
 .btn-secondary {
   background: var(--border);
   color: var(--text);
+}
+/* シート下部の全幅「閉じる」ボタン */
+.sheet-close-btn {
+  width: 100%;
+  margin-top: 14px;
 }
 
 /* ---------- Review ---------- */

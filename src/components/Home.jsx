@@ -1,15 +1,17 @@
 import {
   formatYen,
+  formatDateJa,
   todayStr,
   toDateStr,
-  parseDateStr,
   startOfWeek,
   startOfMonth,
-  WEEKDAYS,
   daysInclusive,
   firstExpenseDate,
   formatHours,
   underBudgetStreak,
+  sumAmount,
+  filterByRange,
+  sortNewestFirst,
 } from '../utils'
 import ExpenseList from './ExpenseList'
 
@@ -25,20 +27,14 @@ export default function Home({
 }) {
   const today = todayStr()
 
-  const todayExpenses = expenses
-    .filter((e) => e.date === today)
-    .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
-  const todayTotal = todayExpenses.reduce((a, e) => a + e.amount, 0)
+  const todayExpenses = sortNewestFirst(expenses.filter((e) => e.date === today))
+  const todayTotal = sumAmount(todayExpenses)
 
   const weekStart = toDateStr(startOfWeek())
-  const weekTotal = expenses
-    .filter((e) => e.date >= weekStart && e.date <= today)
-    .reduce((a, e) => a + e.amount, 0)
+  const weekTotal = sumAmount(filterByRange(expenses, weekStart, today))
 
   const monthStart = toDateStr(startOfMonth())
-  const monthTotal = expenses
-    .filter((e) => e.date >= monthStart && e.date <= today)
-    .reduce((a, e) => a + e.amount, 0)
+  const monthTotal = sumAmount(filterByRange(expenses, monthStart, today))
 
   const budget = settings.dailyBudget || 0
   const remaining = budget - todayTotal
@@ -52,21 +48,14 @@ export default function Home({
     const startStr = first > monthStart ? first : monthStart
     if (startStr <= today) {
       const elapsed = daysInclusive(startStr, today)
-      const spent = expenses
-        .filter((e) => e.date >= startStr && e.date <= today)
-        .reduce((a, e) => a + e.amount, 0)
+      const spent = sumAmount(filterByRange(expenses, startStr, today))
       saved = elapsed * budget - spent
     }
   }
 
   const wage = settings.hourlyWage || 0
   const todayHours = formatHours(todayTotal, wage)
-  const streak = underBudgetStreak(
-    expenses,
-    budget,
-    today,
-    firstExpenseDate(expenses),
-  )
+  const streak = underBudgetStreak(expenses, budget, today, first)
 
   return (
     <div>
@@ -162,9 +151,4 @@ export default function Home({
       </section>
     </div>
   )
-}
-
-function formatDateJa(str) {
-  const date = parseDateStr(str)
-  return `${date.getMonth() + 1}月${date.getDate()}日(${WEEKDAYS[date.getDay()]})`
 }

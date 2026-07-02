@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { formatYen, todayStr } from '../utils'
+import { formatYen, todayStr, sumAmount, sortNewestFirst } from '../utils'
 import ExpenseList from './ExpenseList'
 
 export default function HistorySearch({ expenses, categories, onEdit, onDelete }) {
@@ -20,8 +20,8 @@ export default function HistorySearch({ expenses, categories, onEdit, onDelete }
     const min = parseInt(minAmount, 10) || 0
     const max = parseInt(maxAmount, 10) || 0
 
-    return expenses
-      .filter((e) => {
+    return sortNewestFirst(
+      expenses.filter((e) => {
         const cat = catMap[e.categoryId]
         const memo = (e.memo || '').toLowerCase()
         const catName = (cat?.name || '').toLowerCase()
@@ -32,15 +32,11 @@ export default function HistorySearch({ expenses, categories, onEdit, onDelete }
         if (min > 0 && e.amount < min) return false
         if (max > 0 && e.amount > max) return false
         return true
-      })
-      .sort((a, b) => {
-        const date = b.date.localeCompare(a.date)
-        if (date !== 0) return date
-        return (b.createdAt || '').localeCompare(a.createdAt || '')
-      })
+      }),
+    )
   }, [expenses, catMap, query, categoryId, dateFrom, dateTo, minAmount, maxAmount])
 
-  const total = filtered.reduce((a, e) => a + e.amount, 0)
+  const total = sumAmount(filtered)
 
   function clearFilters() {
     setQuery('')

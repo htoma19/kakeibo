@@ -1,5 +1,5 @@
 import { SCHEMA_VERSION } from './db'
-import { parseDateStr } from './utils'
+import { parseDateStr, firstExpenseDate } from './utils'
 
 export function downloadFile(content, filename, type) {
   const blob = new Blob([content], { type })
@@ -51,10 +51,7 @@ export function backupReminderDue(expenses, settings, now = new Date()) {
   if (snoozed && now - snoozed < 7 * DAY) return false
   const last = settings.lastBackupAt ? new Date(settings.lastBackupAt) : null
   if (!last) {
-    const first = expenses.reduce(
-      (min, e) => (e.date < min ? e.date : min),
-      expenses[0].date,
-    )
+    const first = firstExpenseDate(expenses)
     return now - parseDateStr(first) >= 7 * DAY
   }
   return now - last >= 30 * DAY

@@ -37,6 +37,42 @@ export function startOfMonth(d = new Date()) {
 
 export const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土']
 
+// 「M月D日(曜)」形式に（ホーム・日別明細で共通）
+export function formatDateJa(str) {
+  const d = parseDateStr(str)
+  return `${d.getMonth() + 1}月${d.getDate()}日(${WEEKDAYS[d.getDay()]})`
+}
+
+// 支出の合計金額
+export function sumAmount(expenses) {
+  return expenses.reduce((a, e) => a + e.amount, 0)
+}
+
+// 期間内（両端含む）の支出だけに絞る
+export function filterByRange(expenses, startStr, endStr) {
+  return expenses.filter((e) => e.date >= startStr && e.date <= endStr)
+}
+
+// カテゴリごとの合計（多い順、0円のカテゴリは除外）
+export function totalsByCategory(expenses, categories) {
+  return categories
+    .map((c) => ({
+      c,
+      total: sumAmount(expenses.filter((e) => e.categoryId === c.id)),
+    }))
+    .filter((x) => x.total > 0)
+    .sort((a, b) => b.total - a.total)
+}
+
+// 新しい順に並べ替え（同じ日付なら登録が新しい順）。元の配列は変えない
+export function sortNewestFirst(expenses) {
+  return [...expenses].sort((a, b) => {
+    const byDate = b.date.localeCompare(a.date)
+    if (byDate !== 0) return byDate
+    return (b.createdAt || '').localeCompare(a.createdAt || '')
+  })
+}
+
 // よく使う支出（直近90日で2回以上登場した「金額×カテゴリ×メモ」の組）
 // 入力シートのワンタップ候補に使う。登録不要で履歴から自動学習する
 export function frequentEntries(expenses, limit = 6) {
