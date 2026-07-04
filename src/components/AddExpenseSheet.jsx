@@ -20,7 +20,6 @@ export default function AddExpenseSheet({
   const [memo, setMemo] = useState(initial?.memo || '')
   const [date, setDate] = useState(initial?.date || today)
   const [catPickerOpen, setCatPickerOpen] = useState(false)
-  const [catQuery, setCatQuery] = useState('')
   const [detailsOpen, setDetailsOpen] = useState(
     !!initial && (!!initial.memo || initial.date !== today),
   )
@@ -29,14 +28,6 @@ export default function AddExpenseSheet({
   const canSave = amountNum > 0 && categoryId
   const hours = formatHours(amountNum, hourlyWage)
   const selCat = categories.find((c) => c.id === categoryId)
-  const filteredCategories = categories.filter((c) => {
-    const q = catQuery.trim().toLowerCase()
-    if (!q) return true
-    return (
-      c.name.toLowerCase().includes(q) ||
-      (c.icon || '').includes(catQuery.trim())
-    )
-  })
 
   function pressKey(k) {
     setAmount((prev) => {
@@ -212,16 +203,8 @@ export default function AddExpenseSheet({
           zIndex={36}
           onClose={() => setCatPickerOpen(false)}
         >
-          <input
-            className="cat-search"
-            type="search"
-            placeholder="カテゴリを検索"
-            value={catQuery}
-            autoFocus
-            onChange={(e) => setCatQuery(e.target.value)}
-          />
           <ul className="cat-pick-list">
-            {filteredCategories.map((c) => (
+            {categories.map((c) => (
               <li key={c.id}>
                 <button
                   className={
@@ -245,9 +228,6 @@ export default function AddExpenseSheet({
                 </button>
               </li>
             ))}
-            {filteredCategories.length === 0 && (
-              <li className="cat-pick-empty">該当するカテゴリがありません</li>
-            )}
           </ul>
         </Sheet>
       )}

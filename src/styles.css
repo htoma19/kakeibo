@@ -476,22 +476,6 @@ input {
   max-height: 60vh;
   overflow-y: auto;
 }
-.cat-search {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
-  padding: 13px 14px;
-  font-size: 1rem;
-  margin-bottom: 10px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.45),
-    rgba(255, 255, 255, 0.16)
-  );
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  backdrop-filter: blur(10px) saturate(160%);
-  color: var(--text);
-}
 .cat-pick-row {
   display: flex;
   align-items: center;
@@ -517,12 +501,6 @@ input {
 .cat-pick-check {
   color: var(--accent);
   font-weight: 800;
-}
-.cat-pick-empty {
-  padding: 18px 4px;
-  color: var(--muted);
-  text-align: center;
-  font-size: 0.95rem;
 }
 
 /* ===== アプリ内テンキー ===== */
