@@ -1,6 +1,16 @@
 import { useRef, useState } from 'react'
-import { exportBackupJSON, downloadFile, stamp } from '../backup'
+import {
+  exportBackupJSON,
+  downloadFile,
+  stamp,
+  sanitizeBackup,
+} from '../backup'
 import CategoryEditSheet from './CategoryEditSheet'
+
+// 表計算ソフトが先頭の = + - @ を数式と解釈しないようにする（CSVインジェクション対策）
+function csvSafe(s) {
+  return /^[=+\-@\t\r]/.test(s) ? "'" + s : s
+}
 
 // 「¥ + 数字入力 + 保存」の共通セクション（1日の目安額・時給で使用）
 function MoneySection({ title, value, placeholder, note, onChange, onSave }) {
@@ -98,7 +108,12 @@ export default function Settings({
       .slice()
       .sort((a, b) => a.date.localeCompare(b.date))
       .forEach((e) => {
-        rows.push([e.date, catMap[e.categoryId] || '不明', e.amount, e.memo || ''])
+        rows.push([
+          e.date,
+          csvSafe(catMap[e.categoryId] || '不明'),
+          e.amount,
+          csvSafe(e.memo || ''),
+        ])
       })
     const csv =
       '﻿' +
@@ -115,10 +130,11 @@ export default function Settings({
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result)
-        if (!Array.isArray(data.expenses)) throw new Error('支出データが見つかりません')
+        // 想定している項目・型だけを取り込む（壊れたファイル対策）
+        const clean = sanitizeBackup(data)
         if (confirm('現在のデータをこのバックアップで置き換えます。よろしいですか？')) {
-          onImport(data)
-          alert('復元しました')
+          onImport(clean)
+          alert(`復元しました（記録 ${clean.expenses.length} 件）`)
         }
       } catch (err) {
         alert('読み込めませんでした: ' + err.message)
